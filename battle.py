@@ -104,6 +104,7 @@ class Assassin(BattleCards):
 		if(self.roll < otherPlayer.roll and self.tokens>0): 
 			self.tokens -= 1
 			self.roll *= 2
+
 			print("Use Assasin Power")
 
 	def rollDice(self):
@@ -111,6 +112,39 @@ class Assassin(BattleCards):
 
 		if (self.roll == 4 or self.roll == 5): 
 			self.roll = 6
+
+class Weenie(BattleCards): 
+	def __init__(self):
+		self.HP = 2
+		self.tokens = 0 
+		self.rollThree =0
+		self.secondRoll = 0
+
+	def usePower(self,otherPlayer): 
+		self.damage = 1
+		if (self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll):
+			self.damage += 1
+		if(self.rollThree > otherPlayer.roll): 
+			self.damage += 1 
+
+		print("Weenie Damage: "+ str(self.damage))
+
+	def changeDice(self, roll):
+		if (roll == 4): 
+			roll = 3
+		if (roll == 6):
+			roll = 5 
+		return roll 
+
+	def rollDice(self):
+		self.roll = random.randint(1,6)
+		self.roll = self.changeDice(self.roll)
+
+		self.secondRoll = random.randint(1,6)
+		self.secondRoll = self.changeDice(self.secondRoll)
+
+		self.rollThree = random.randint(1,6)
+		self.rollThree = self.changeDice(self.rollThree)
 
 def round(player1, player2): 
 	count = 0
@@ -139,5 +173,5 @@ def round(player1, player2):
 
 if __name__ == "__main__":
 	player1 = Wimp()
-	player2 = Assassin()
+	player2 = Weenie()
 	round(player1,player2)
