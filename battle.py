@@ -95,6 +95,22 @@ class Wimp(BattleCards):
 			self.roll += 3
 			print("Use Wimp Power")
 
+class Assassin(BattleCards): 
+	def __init__(self):
+		self.HP = 3 
+		self.tokens = 1
+
+	def usePower(self,otherPlayer): 
+		if(self.roll < otherPlayer.roll and self.tokens>0): 
+			self.tokens -= 1
+			self.roll *= 2
+			print("Use Assasin Power")
+
+	def rollDice(self):
+		self.roll = random.randint(1,6)
+
+		if (self.roll == 4 or self.roll == 5): 
+			self.roll = 6
 
 def round(player1, player2): 
 	count = 0
@@ -123,5 +139,5 @@ def round(player1, player2):
 
 if __name__ == "__main__":
 	player1 = Wimp()
-	player2 = Barbarian()
+	player2 = Assassin()
 	round(player1,player2)
