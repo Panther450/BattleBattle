@@ -16,6 +16,7 @@ class BattleCards:
 		self.roll = random.randint(1,6)
 
 	def rollDice(self):
+		self.damage = 1
 		self.roll = random.randint(1,6)
 
 #Powers: Token: add 1 to your battle die
@@ -26,7 +27,6 @@ class Vanilla(BattleCards):
 
 
 	def usePower(self,otherPlayer):
-		self.damage = 1
 		if (self.tokens>=1 and self.roll<otherPlayer.roll):
 			self.roll += 1
 			self.tokens -=1
@@ -40,7 +40,6 @@ class Ruler(BattleCards):
 		self.tokens = 2
 
 	def usePower(self,otherPlayer):
-		self.damage = 1
 		if (self.tokens>=1 and self.roll<otherPlayer.roll):
 			self.roll = 100
 			self.tokens -=1
@@ -55,7 +54,6 @@ class Banker(BattleCards):
 		self.tokens = 0
 
 	def usePower(self,otherPlayer): 
-		self.damage = 1
 		if(self.tokens>=1): 
 			self.roll +=2
 			self.tokens-=1
@@ -76,7 +74,6 @@ class Barbarian(BattleCards):
 		self.secondRoll = 0
 
 	def usePower(self,otherPlayer):
-		self.damage = 1
 		if (self.secondRoll>otherPlayer.roll and self.roll>otherPlayer.roll): 
 			self.damage += 1
 		else: 
@@ -84,6 +81,7 @@ class Barbarian(BattleCards):
 				self.Roll = self.secondRoll 
 
 	def rollDice(self): 
+		self.damage = 1
 		self.roll = random.randint(1,6)
 
 		if (self.roll <=3): 
@@ -102,10 +100,10 @@ class Wimp(BattleCards):
 		self.tokens = 0
 
 	def usePower(self,otherPlayer):
-		self.damage = 1
 		if (otherPlayer.HP>self.HP): 
 			self.roll += 3
 			print("Use Wimp Power")
+
 
 #POWERS: TOKEN: Double your roll 
 # if you roll a 4 or a 5 it counts as a 6
@@ -116,7 +114,6 @@ class Assassin(BattleCards):
 		self.tokens = 1
 
 	def usePower(self,otherPlayer): 
-		self.damage = 1
 		if(self.roll < otherPlayer.roll and self.tokens>0): 
 			self.tokens -= 1
 			self.roll *= 2
@@ -124,6 +121,7 @@ class Assassin(BattleCards):
 			print("Use Assasin Power")
 
 	def rollDice(self):
+		self.damage = 1
 		self.roll = random.randint(1,6)
 
 		if (self.roll == 4 or self.roll == 5): 
@@ -138,7 +136,6 @@ class Weenie(BattleCards):
 		self.secondRoll = 0
 
 	def usePower(self,otherPlayer): 
-		self.damage = 1
 		if (self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll):
 			self.damage += 1
 		if(self.rollThree > otherPlayer.roll): 
@@ -154,6 +151,7 @@ class Weenie(BattleCards):
 		return roll 
 
 	def rollDice(self):
+		self.damage = 1
 		self.roll = random.randint(1,6)
 		self.roll = self.changeDice(self.roll)
 
@@ -174,8 +172,6 @@ class Wizard(BattleCards):
 		self.secondRoll = 0
 
 	def usePower(self,otherPlayer): 
-		self.damage = 1
-
 		if (self.roll == self.secondRoll): 
 			self.damage = 0
 		elif(self.tokens>0 and self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll): 
@@ -184,15 +180,36 @@ class Wizard(BattleCards):
 			self.damage += 1
 
 	def rollDice(self):
+		self.damage = 1
 		self.roll = random.randint(1,6)
 		self.secondRoll = random.randint(1,6)
 
 # POWERS: TOKEN: Take no damage this round.
 # 		  The next round damage is doubled	
-# class Gambler(BattleCards): 
-# 	def __init__(self):
-# 		self.HP = 5
-# 		self.tokens = 3
+#         On a 3 or a 4 roll again
+
+class Gambler(BattleCards): 
+	def __init__(self):
+		self.HP = 5
+		self.tokens = 3
+		self.lastRoundToken = False
+
+	def usePower(self,otherPlayer): 
+		if(self.tokens>0 and self.roll<otherPlayer.roll): 
+			print("Gambler Token Used")
+			self.tokens -= 1
+			otherPlayer.damage = 0
+			self.lastRoundToken = True 
+		elif(self.lastRoundToken): 
+			self.lastRoundToken = False 
+			otherPlayer.damage= otherPlayer.damage*2
+
+	def rollDice(self):
+		self.damage = 1
+		self.roll = random.randint(1,6)
+
+		while(self.roll== 3 or self.roll == 4): 
+			self.roll = random.randint(1,6)
 
 
 
@@ -205,11 +222,11 @@ class Zombie(BattleCards):
 		self.tokens = 0 
 
 	def usePower(self,otherPlayer): 
-		self.damage = 1
 		if (self.roll == 1): 
 			otherPlayer.damage = 0
 
 	def rollDice(self):
+		self.damage = 1
 		self.roll = random.randint(1,6)
 		if (self.roll == 6): 
 			self.roll = 1
@@ -221,11 +238,16 @@ def round(player1, player2):
 	while(player1.HP>=0 and player2.HP>=0):
 		count += 1
 		print(count)
+
 		player1.rollDice()
 		player2.rollDice()
 
-		player1.usePower(player2)
-		player2.usePower(player1)
+		if (player1.HP>=player2.HP):
+			player1.usePower(player2)
+			player2.usePower(player1)
+		else:
+			player2.usePower(player1)
+			player1.usePower(player2)
 
 		if (player1.roll > player2.roll):
 			player2.HP-=player1.damage
@@ -242,6 +264,6 @@ def round(player1, player2):
 		print("player 2 Win")
 
 if __name__ == "__main__":
-	player1 = Wizard()
+	player1 = Gambler()
 	player2 = Zombie()
 	round(player1,player2)
