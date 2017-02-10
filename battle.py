@@ -25,8 +25,8 @@ class Vanilla(BattleCards):
 		self.tokens = 3
 
 
-	def usePower(self,otherRoll):
-		if (self.tokens>=1 and self.roll<otherRoll):
+	def usePower(self,otherPlayer):
+		if (self.tokens>=1 and self.roll<otherPlayer.roll):
 			self.roll += 1
 			self.tokens -=1
 			print("use Vanilla token")
@@ -38,8 +38,8 @@ class Ruler(BattleCards):
 		self.HP = 4
 		self.tokens = 2
 
-	def usePower(self,otherRoll):
-		if (self.tokens>=1 and self.roll<otherRoll):
+	def usePower(self,otherPlayer):
+		if (self.tokens>=1 and self.roll<otherPlayer.roll):
 			self.roll = 100
 			self.tokens -=1
 			print("use Ruler token")
@@ -50,13 +50,13 @@ class Banker(BattleCards):
 		self.HP = 4
 		self.tokens = 0
 
-	def usePower(self,otherRoll): 
+	def usePower(self,otherPlayer): 
 		if(self.tokens>=1): 
 			self.roll +=2
 			self.tokens-=1
 			print("banker adds to rolls")
 
-		if(self.roll<otherRoll): 
+		if(self.roll<otherPlayer.roll): 
 			self.tokens += 1
 			print("Tokens: " +str(self.tokens))
 
@@ -67,8 +67,8 @@ class Barbarian(BattleCards):
 		self.tokens = 0
 		self.secondRoll = 0
 
-	def usePower(self,otherRoll):
-		if (self.secondRoll>otherRoll and self.roll>otherRoll): 
+	def usePower(self,otherPlayer):
+		if (self.secondRoll>otherPlayer.roll and self.roll>otherPlayer.roll): 
 			self.damage += 1
 		else: 
 			if (self.secondRoll>=self.roll): 
@@ -85,6 +85,15 @@ class Barbarian(BattleCards):
 		if (self.secondRoll <=3): 
 			self.secondRoll = 4
 
+class Wimp(BattleCards):
+	def __init__(self): 
+		self.HP = 3
+		self.tokens = 0
+
+	def usePower(self,otherPlayer):
+		if (otherPlayer.HP>self.HP): 
+			self.roll += 3
+			print("Use Wimp Power")
 
 
 def round(player1, player2): 
@@ -95,8 +104,8 @@ def round(player1, player2):
 		player1.rollDice()
 		player2.rollDice()
 
-		player1.usePower(player2.roll)
-		player2.usePower(player1.roll)
+		player1.usePower(player2)
+		player2.usePower(player1)
 
 		if (player1.roll > player2.roll):
 			player2.HP-=player1.damage
@@ -113,6 +122,6 @@ def round(player1, player2):
 		print("player 2 Win")
 
 if __name__ == "__main__":
-	player1 = Ruler()
+	player1 = Wimp()
 	player2 = Barbarian()
 	round(player1,player2)
