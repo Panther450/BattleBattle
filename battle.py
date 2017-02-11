@@ -231,6 +231,76 @@ class Zombie(BattleCards):
 		if (self.roll == 6): 
 			self.roll = 1
 
+#POWERS: EVERY ROUND: Wins Ties 
+#        TOKEN: Reduce opponent's roll by one
+
+class General(BattleCards): 
+	def __init__(self):
+		self.HP = 4
+		self.tokens = 3 
+
+	def usePower(self,otherPlayer): 
+		if(otherPlayer.roll == self.roll): 
+			self.roll += 1
+			print("Tie")
+		elif(otherPlayer.roll == self.roll+1):
+			otherPlayer.roll -= 1
+			self.tokens -= 1
+			print("General Token used")
+
+#POWERS: TOKEN: Keep your same battle die number for next round 
+#               You cannot use a token 2 turns in a row 
+
+class Bodybuilder(BattleCards): 
+	def __init__(self):
+		self.HP = 5
+		self.tokens = 3 
+		self.lastRoundToken = False
+		self.lastRoll = 0
+
+	def usePower(self,otherPlayer): 
+		if(self.lastRoundToken == False): 
+			if(self.roll == 6 or self.roll == 5): 
+				self.lastRoll = self.roll
+				self.lastRoundToken = True
+				self.tokens -= 1
+				print("Bodybuilder token used")
+			elif(self.lastRoundToken == True): 
+				self.lastRoundToken == False
+
+	def rollDice(self): 
+		self.damage = 1
+		self.roll = random.randint(1,6) 
+
+		if(self.lastRoundToken == True): 
+			self.roll = self.lastRoll
+
+
+#POWERS: - EVERY ROUND: Each time you take damage, steal 1 token from your opponent
+#        - EVERY ROUND: If your opponent has no tokens, when you take damage, add 2 to your next roll 
+
+class Thief(BattleCards):
+	def __init__(self):
+		self.HP = 4
+		self.tokens = 0
+		self.lastRoundPower = False 
+
+	def usePower(self,otherPlayer): 
+		if(self.roll < otherPlayer.roll and otherPlayer.tokens>0):
+			otherPlayer.token -=1 
+
+		elif(self.roll < otherPlayer.roll and otherPlayer.tokens<=0):
+			self.lastRoundPower = True
+
+	def rollDice(self):
+		self.damage = 1
+		self.roll = random.randint(1,6) 
+
+		if(self.lastRoundPower == True): 
+			self.roll = self.roll+2
+
+
+
 
 
 def round(player1, player2): 
@@ -264,6 +334,6 @@ def round(player1, player2):
 		print("player 2 Win")
 
 if __name__ == "__main__":
-	player1 = Gambler()
-	player2 = Zombie()
+	player1 = Bodybuilder()
+	player2 = Thief()
 	round(player1,player2)
