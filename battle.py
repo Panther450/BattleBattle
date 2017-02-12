@@ -1,4 +1,5 @@
 import random 
+import itertools 
 
 class BattleCards: 
 	HP = 5
@@ -24,13 +25,13 @@ class Vanilla(BattleCards):
 	def __init__(self): 
 		self.HP = 5
 		self.tokens = 3
+		self.name = "Vanilla"
 
 
 	def usePower(self,otherPlayer):
 		if (self.tokens>=1 and self.roll<otherPlayer.roll):
 			self.roll += 1
 			self.tokens -=1
-			print("use Vanilla token")
 			
 
 #Powers: TOKEN: You win the round
@@ -38,13 +39,12 @@ class Ruler(BattleCards):
 	def __init__(self): 
 		self.HP = 4
 		self.tokens = 2
+		self.name = "Ruler"
 
 	def usePower(self,otherPlayer):
 		if (self.tokens>=1 and self.roll<otherPlayer.roll):
 			self.roll = 100
 			self.tokens -=1
-			print("use Ruler token")
-
 
 # Powers: EVERY ROUND: Gain 1 token for each HP of damage you recieve 
 # 		TOKEN: add 2 to your roll 
@@ -52,16 +52,15 @@ class Banker(BattleCards):
 	def __init__(self): 
 		self.HP = 4
 		self.tokens = 0
+		self.name = "Banker"
 
 	def usePower(self,otherPlayer): 
 		if(self.tokens>=1): 
 			self.roll +=2
 			self.tokens-=1
-			print("banker adds to rolls")
 
 		if(self.roll<otherPlayer.roll): 
 			self.tokens += 1
-			print("Tokens: " +str(self.tokens))
 
 # POWERS: EVERY ROUND: Roll 2 battle dice. Score 1 HP damage for each die that beats opponent's roll
 # EVERY ROUND: Double All damage you recieve
@@ -72,6 +71,7 @@ class Barbarian(BattleCards):
 		self.HP = 6
 		self.tokens = 0
 		self.secondRoll = 0
+		self.name = "Barbarian"
 
 	def usePower(self,otherPlayer):
 		if (self.secondRoll>otherPlayer.roll and self.roll>otherPlayer.roll): 
@@ -98,12 +98,11 @@ class Wimp(BattleCards):
 	def __init__(self): 
 		self.HP = 3
 		self.tokens = 0
+		self.name = "Wimp"
 
 	def usePower(self,otherPlayer):
 		if (otherPlayer.HP>self.HP): 
 			self.roll += 3
-			print("Use Wimp Power")
-
 
 #POWERS: TOKEN: Double your roll 
 # if you roll a 4 or a 5 it counts as a 6
@@ -112,13 +111,12 @@ class Assassin(BattleCards):
 	def __init__(self):
 		self.HP = 3 
 		self.tokens = 1
+		self.name = "Assassin"
 
 	def usePower(self,otherPlayer): 
 		if(self.roll < otherPlayer.roll and self.tokens>0): 
 			self.tokens -= 1
 			self.roll *= 2
-
-			print("Use Assasin Power")
 
 	def rollDice(self):
 		self.damage = 1
@@ -134,14 +132,13 @@ class Weenie(BattleCards):
 		self.tokens = 0 
 		self.rollThree =0
 		self.secondRoll = 0
+		self.name = "Weenie"
 
 	def usePower(self,otherPlayer): 
 		if (self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll):
 			self.damage += 1
 		if(self.rollThree > otherPlayer.roll): 
 			self.damage += 1 
-
-		print("Weenie Damage: "+ str(self.damage))
 
 	def changeDice(self, roll):
 		if (roll == 4): 
@@ -170,12 +167,12 @@ class Wizard(BattleCards):
 		self.HP = 2
 		self.tokens = 5
 		self.secondRoll = 0
+		self.name = "Wizard"
 
 	def usePower(self,otherPlayer): 
 		if (self.roll == self.secondRoll): 
 			self.damage = 0
 		elif(self.tokens>0 and self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll): 
-			print("Wizard Token Used")
 			self.tokens -= 1
 			self.damage += 1
 
@@ -193,10 +190,10 @@ class Gambler(BattleCards):
 		self.HP = 5
 		self.tokens = 3
 		self.lastRoundToken = False
+		self.name = "Gambler"
 
 	def usePower(self,otherPlayer): 
 		if(self.tokens>0 and self.roll<otherPlayer.roll): 
-			print("Gambler Token Used")
 			self.tokens -= 1
 			otherPlayer.damage = 0
 			self.lastRoundToken = True 
@@ -220,6 +217,7 @@ class Zombie(BattleCards):
 	def __init__(self):
 		self.HP = 2
 		self.tokens = 0 
+		self.name = "Zombie"
 
 	def usePower(self,otherPlayer): 
 		if (self.roll == 1): 
@@ -238,15 +236,14 @@ class General(BattleCards):
 	def __init__(self):
 		self.HP = 4
 		self.tokens = 3 
+		self.name = "General"
 
 	def usePower(self,otherPlayer): 
 		if(otherPlayer.roll == self.roll): 
 			self.roll += 1
-			print("Tie")
 		elif(otherPlayer.roll == self.roll+1):
 			otherPlayer.roll -= 1
 			self.tokens -= 1
-			print("General Token used")
 
 #POWERS: TOKEN: Keep your same battle die number for next round 
 #               You cannot use a token 2 turns in a row 
@@ -257,6 +254,7 @@ class Bodybuilder(BattleCards):
 		self.tokens = 3 
 		self.lastRoundToken = False
 		self.lastRoll = 0
+		self.name = "Bodybuilder"
 
 	def usePower(self,otherPlayer): 
 		if(self.lastRoundToken == False): 
@@ -264,7 +262,6 @@ class Bodybuilder(BattleCards):
 				self.lastRoll = self.roll
 				self.lastRoundToken = True
 				self.tokens -= 1
-				print("Bodybuilder token used")
 			elif(self.lastRoundToken == True): 
 				self.lastRoundToken == False
 
@@ -284,10 +281,11 @@ class Thief(BattleCards):
 		self.HP = 4
 		self.tokens = 0
 		self.lastRoundPower = False 
+		self.name = "Thief"
 
 	def usePower(self,otherPlayer): 
 		if(self.roll < otherPlayer.roll and otherPlayer.tokens>0):
-			otherPlayer.token -=1 
+			otherPlayer.tokens -=1 
 
 		elif(self.roll < otherPlayer.roll and otherPlayer.tokens<=0):
 			self.lastRoundPower = True
@@ -298,16 +296,74 @@ class Thief(BattleCards):
 
 		if(self.lastRoundPower == True): 
 			self.roll = self.roll+2
+			self.lastRoundPower = False
 
 
 
+#POWERS: TOKEN: double your damage. The next round, subtract 3 from your roll. 
+
+class Boxer(BattleCards):
+	def __init__(self):
+		self.HP = 5
+		self.tokens = 3
+		self.lastRoundPower = False 
+		self.name = "Boxer"	
+
+	def usePower(self,otherPlayer): 
+		if(self.roll>otherPlayer.roll): 
+			self.damage += 3 
+			self.tokens -= 1
+			self.lastRoundPower = True 
+
+	def rollDice(self): 
+		self.damage = 1
+		self.roll = random.randint(1,6) 
+
+		if(self.lastRoundPower == True): 
+			self.roll = self.roll-3
+			self.lastRoundPower = False
+
+
+#POWERS: TOKEN: roll again 
+# If you roll a 1,2,3 then +1 token
+# IF THEY ROLL AGAIN DO THEY GET A TOKEN ON A 1-3 ROLL?
+class Trickster(BattleCards):
+	def __init__(self):
+		self.HP = 4
+		self.tokens = 0
+		self.name = "Trickster"
+
+	def usePower(self,otherPlayer):
+		if(self.roll<otherPlayer.roll):
+			self.rollDice()
+			self.tokens-=1
+
+	def rollDice(self): 
+		self. damage = 1
+		self.roll = random.randint(1,6) 
+
+		if(self.roll<=3): 
+			self.tokens+=1
+
+#POWERS TOKEN: permanently swap your HP die and your battle die roll 
+class Survivalist(BattleCards):
+	def __init__(self):
+		self.HP = 5
+		self.tokens = 1
+		self.name = "Survivalist"
+
+	def usePower(self,otherPlayer):
+		if(self.HP == 1 and self.tokens >0): 
+			self.tokens -=1
+			roll = self.roll 
+			self.roll = self.HP 
+			self.HP = roll 
 
 
 def round(player1, player2): 
 	count = 0
 	while(player1.HP>=0 and player2.HP>=0):
 		count += 1
-		print(count)
 
 		player1.rollDice()
 		player2.rollDice()
@@ -321,19 +377,88 @@ def round(player1, player2):
 
 		if (player1.roll > player2.roll):
 			player2.HP-=player1.damage
-			player1.wins+=1
 
 		elif (player2.roll > player1.roll):
 			player1.HP-=player2.damage
-			player2.wins+=1
 
 	if (player1.HP>player2.HP): 
-		print("player 1 Win")
+		player1.wins += 1
 
 	else: 
-		print("player 2 Win")
+		player2.wins += 1
+
+
+#Sets up the list of characters so we can go through them
+def setUp(): 
+	characterList = []
+
+	barbarian = Barbarian()
+	characterList.append(barbarian)
+
+	ruler = Ruler()
+	characterList.append(ruler)
+
+	banker = Banker()
+	characterList.append(banker)
+
+	vanilla = Vanilla()
+	characterList.append(vanilla)
+
+	zombie = Zombie()
+	characterList.append(zombie)
+
+	wimp = Wimp()
+	characterList.append(wimp)
+
+	assassin = Assassin()
+	characterList.append(assassin)
+
+	weenie = Weenie()
+	characterList.append(weenie)
+
+	gambler = Gambler() 
+	characterList.append(gambler)
+
+	wizard = Wizard()
+	characterList.append(wizard)
+
+	general = General()
+	characterList.append(general)
+
+	bodybuilder = Bodybuilder()
+	characterList.append(bodybuilder)
+
+	thief  = Thief()
+	characterList.append(thief)
+
+	boxer = Boxer()
+	characterList.append(boxer)
+
+	trickster = Trickster()
+	characterList.append(trickster)
+
+	survivalist = Survivalist()
+	characterList.append(survivalist)
+
+	return characterList
+
+def RunSimulation():
+	characterList = setUp()
+	print(characterList)
+	characterList2 = setUp()
+
+
+	for character1 in characterList:
+		player1 = character1 
+		for character2 in characterList2: 
+			player2 = character2 
+
+			print(player1.name + " vs "+ player2.name)
+			for x in range (1,10):
+				round(player1, player2)
 
 if __name__ == "__main__":
-	player1 = Bodybuilder()
-	player2 = Thief()
-	round(player1,player2)
+
+	 player1 = Barbarian()
+	 player2 = Barbarian()
+	 round(player1,player2)
