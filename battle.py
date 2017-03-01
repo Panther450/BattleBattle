@@ -6,10 +6,14 @@ class BattleCards:
 	wins = 0
 	loses = 0
 	tokens = 3
+	gamesPlayed = 0
 	roll = random.randint(1,6)
 	damage = 1
 
 	def __init__(self):
+		self.reset()
+
+	def reset(self):
 		self.HP = 5
 		self.wins = 0
 		self.loses = 0
@@ -22,11 +26,11 @@ class BattleCards:
 
 #Powers: Token: add 1 to your battle die
 class Vanilla(BattleCards): 
-	def __init__(self): 
+
+	def reset(self):
 		self.HP = 5
 		self.tokens = 3
 		self.name = "Vanilla"
-
 
 	def usePower(self,otherPlayer):
 		if (self.tokens>=1 and self.roll<otherPlayer.roll):
@@ -35,8 +39,9 @@ class Vanilla(BattleCards):
 			
 
 #Powers: TOKEN: You win the round
+#Changes: N/A
 class Ruler(BattleCards): 
-	def __init__(self): 
+	def reset(self): 
 		self.HP = 4
 		self.tokens = 2
 		self.name = "Ruler"
@@ -48,8 +53,10 @@ class Ruler(BattleCards):
 
 # Powers: EVERY ROUND: Gain 1 token for each HP of damage you recieve 
 # 		TOKEN: add 2 to your roll 
+
+#Changes: N/A
 class Banker(BattleCards): 
-	def __init__(self): 
+	def reset(self): 
 		self.HP = 4
 		self.tokens = 0
 		self.name = "Banker"
@@ -64,10 +71,12 @@ class Banker(BattleCards):
 
 # POWERS: EVERY ROUND: Roll 2 battle dice. Score 1 HP damage for each die that beats opponent's roll
 # EVERY ROUND: Double All damage you recieve
-# If you roll a 1-3 it counts as a 4
+# If you roll a 1-3 it counts as a 4 : THIS WAS CHANGED: DOESNT DO THIS ANYMORE
+
+#Changes: Remove the rolls 1 - 3 equalling 4
 class Barbarian(BattleCards):
 
-	def __init__(self): 
+	def reset(self): 
 		self.HP = 6
 		self.tokens = 0
 		self.secondRoll = 0
@@ -93,9 +102,9 @@ class Barbarian(BattleCards):
 			self.secondRoll = 4
 
 # POWERS: EVERY ROUND: If you have less HP than your opponent, add 3 to your roll
-
+#Changes: N/A
 class Wimp(BattleCards):
-	def __init__(self): 
+	def reset(self): 
 		self.HP = 3
 		self.tokens = 0
 		self.name = "Wimp"
@@ -106,9 +115,9 @@ class Wimp(BattleCards):
 
 #POWERS: TOKEN: Double your roll 
 # if you roll a 4 or a 5 it counts as a 6
-
+#Changes: N/A
 class Assassin(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 3 
 		self.tokens = 1
 		self.name = "Assassin"
@@ -126,8 +135,9 @@ class Assassin(BattleCards):
 			self.roll = 6
 
 #POWER: EVERY ROUND: Roll 3 battle dice. Score 1 HP damage for each die that beats opponents roll
+#Changes: N/A
 class Weenie(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 2
 		self.tokens = 0 
 		self.rollThree =0
@@ -161,9 +171,10 @@ class Weenie(BattleCards):
 # POWERS: TOKEN: roll an additional battle die.
 # 		Each die that beats your oppponent's roll scores 1 damage
 # 		EVERY ROUND: If any of your dice are doubles, you score no damage that round
-
+#Changes: Change HP to 3
+# Take Out: If any of your dice are doubles, score no damage that round
 class Wizard(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 2
 		self.tokens = 5
 		self.secondRoll = 0
@@ -172,9 +183,12 @@ class Wizard(BattleCards):
 	def usePower(self,otherPlayer): 
 		if (self.roll == self.secondRoll): 
 			self.damage = 0
-		elif(self.tokens>0 and self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll): 
+		if(self.tokens>0):
 			self.tokens -= 1
-			self.damage += 1
+			if(self.roll>otherPlayer.roll and self.secondRoll>otherPlayer.roll): 
+				self.damage += 1
+			elif(self.secondRoll>self.roll): 
+				self.secondRoll = self.roll
 
 	def rollDice(self):
 		self.damage = 1
@@ -184,9 +198,9 @@ class Wizard(BattleCards):
 # POWERS: TOKEN: Take no damage this round.
 # 		  The next round damage is doubled	
 #         On a 3 or a 4 roll again
-
+#Changes: N/A
 class Gambler(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 5
 		self.tokens = 3
 		self.lastRoundToken = False
@@ -213,14 +227,16 @@ class Gambler(BattleCards):
 
 #POWERS: EVERY ROUND: You can only recieve damage when your battle die is a 1 
 # If you roll a 6 it equals a 1
+
+#Changes: If roll is not a 1 or a 6 roll = 6
 class Zombie(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 2
 		self.tokens = 0 
 		self.name = "Zombie"
 
 	def usePower(self,otherPlayer): 
-		if (self.roll == 1): 
+		if (self.roll != 1): 
 			otherPlayer.damage = 0
 
 	def rollDice(self):
@@ -228,12 +244,15 @@ class Zombie(BattleCards):
 		self.roll = random.randint(1,6)
 		if (self.roll == 6): 
 			self.roll = 1
+		# if (self.roll <=5 and self.roll > 1): 
+		# 	self.roll = 6
+
 
 #POWERS: EVERY ROUND: Wins Ties 
 #        TOKEN: Reduce opponent's roll by one
-
+#Changes: N/A
 class General(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 4
 		self.tokens = 3 
 		self.name = "General"
@@ -243,15 +262,18 @@ class General(BattleCards):
 			self.roll += 1
 		elif(otherPlayer.roll == self.roll+1):
 			otherPlayer.roll -= 1
+			self.roll += 1
 			self.tokens -= 1
 
 #POWERS: TOKEN: Keep your same battle die number for next round 
 #               You cannot use a token 2 turns in a row 
+#Changes: Changed HP from 5 to 3
+#Changed tokens from 3 to 2 
 
 class Bodybuilder(BattleCards): 
-	def __init__(self):
+	def reset(self):
 		self.HP = 5
-		self.tokens = 3 
+		self.tokens = 3
 		self.lastRoundToken = False
 		self.lastRoll = 0
 		self.name = "Bodybuilder"
@@ -259,11 +281,12 @@ class Bodybuilder(BattleCards):
 	def usePower(self,otherPlayer): 
 		if(self.lastRoundToken == False): 
 			if(self.roll == 6 or self.roll == 5): 
-				self.lastRoll = self.roll
-				self.lastRoundToken = True
-				self.tokens -= 1
-			elif(self.lastRoundToken == True): 
-				self.lastRoundToken == False
+				if(self.tokens > 0):
+					self.lastRoll = self.roll
+					self.lastRoundToken = True
+					self.tokens -= 1
+		elif(self.lastRoundToken == True): 
+			self.lastRoundToken == False
 
 	def rollDice(self): 
 		self.damage = 1
@@ -271,13 +294,14 @@ class Bodybuilder(BattleCards):
 
 		if(self.lastRoundToken == True): 
 			self.roll = self.lastRoll
+			self.lastRoundToken = False
 
 
 #POWERS: - EVERY ROUND: Each time you take damage, steal 1 token from your opponent
 #        - EVERY ROUND: If your opponent has no tokens, when you take damage, add 2 to your next roll 
-
+#Changes: N/A
 class Thief(BattleCards):
-	def __init__(self):
+	def reset(self):
 		self.HP = 4
 		self.tokens = 0
 		self.lastRoundPower = False 
@@ -301,17 +325,17 @@ class Thief(BattleCards):
 
 
 #POWERS: TOKEN: double your damage. The next round, subtract 3 from your roll. 
-
+#Changes: N/A
 class Boxer(BattleCards):
-	def __init__(self):
+	def reset(self):
 		self.HP = 5
 		self.tokens = 3
 		self.lastRoundPower = False 
 		self.name = "Boxer"	
 
 	def usePower(self,otherPlayer): 
-		if(self.roll>otherPlayer.roll): 
-			self.damage += 3 
+		if(self.roll>otherPlayer.roll and self.tokens > 0 ): 
+			self.damage += self.damage * 2
 			self.tokens -= 1
 			self.lastRoundPower = True 
 
@@ -327,8 +351,9 @@ class Boxer(BattleCards):
 #POWERS: TOKEN: roll again 
 # If you roll a 1,2,3 then +1 token
 # IF THEY ROLL AGAIN DO THEY GET A TOKEN ON A 1-3 ROLL?
+# Changes: N/A
 class Trickster(BattleCards):
-	def __init__(self):
+	def reset(self):
 		self.HP = 4
 		self.tokens = 0
 		self.name = "Trickster"
@@ -346,8 +371,9 @@ class Trickster(BattleCards):
 			self.tokens+=1
 
 #POWERS TOKEN: permanently swap your HP die and your battle die roll 
+#Changes: N/A
 class Survivalist(BattleCards):
-	def __init__(self):
+	def reset(self):
 		self.HP = 5
 		self.tokens = 1
 		self.name = "Survivalist"
@@ -359,6 +385,23 @@ class Survivalist(BattleCards):
 			self.roll = self.HP 
 			self.HP = roll 
 
+#POWERS TOKEN: EVERY ROUND: Subtracts 1 from other players roll because guilt
+# If she rolls a 1 it turns into a 6
+
+class MotherInLaw(BattleCards):
+	def reset(self):
+		self.HP = 3
+		self.tokens = 0
+		self.name = "MotherInLaw"
+
+	def usePower(self,otherPlayer):
+		return
+	def rollDice(self): 
+		self. damage = 1
+		self.roll = random.randint(1,6) 
+		self.roll = self.roll+1
+		if(self.roll==1): 
+			self.roll = 6
 
 def round(player1, player2): 
 	count = 0
@@ -440,25 +483,53 @@ def setUp():
 	survivalist = Survivalist()
 	characterList.append(survivalist)
 
+	motherinlaw = MotherInLaw()
+	characterList.append(motherinlaw)
+
 	return characterList
 
 def RunSimulation():
 	characterList = setUp()
-	print(characterList)
-	characterList2 = setUp()
+	characterLength = len(characterList)
 
 
-	for character1 in characterList:
-		player1 = character1 
-		for character2 in characterList2: 
-			player2 = character2 
+	for a in range(0,characterLength):
+		player1 = characterList[a]
+		for b in range(0,characterLength): 
+			player2 = characterList[b] 
+			if player2 != player1: 
+				print(player1.name + " vs "+ player2.name)
+				for x in range (0,100):
+					player1.reset()
+					player2.reset()
+					round(player1, player2)
+					player1.gamesPlayed +=1
+					player2.gamesPlayed +=1
 
-			print(player1.name + " vs "+ player2.name)
-			for x in range (1,10):
-				round(player1, player2)
+	total_rounds =0		
+	for c in range(0,characterLength): 
+		win_rate = ((characterList[c].wins*1.0)/characterList[c].gamesPlayed)*100
+		print(characterList[c].name +" Wins: " + str(win_rate))
+		total_rounds = total_rounds + characterList[c].wins
+
+	print("Total Rounds: " + str(total_rounds))
+	#win_rate = ((characterList[4].wins/21000)*100)
+
+	win_rate = (characterList[11].wins/(total_rounds*1.0))*100
+	print("Win Rate: " + str(win_rate))
 
 if __name__ == "__main__":
+	RunSimulation()
 
-	 player1 = Barbarian()
-	 player2 = Barbarian()
-	 round(player1,player2)
+	# player1 = Zombie()
+	# player2 = Weenie()
+
+	# for x in range (1,100):
+	# 	player1.reset()
+	# 	player2.reset()
+	# 	round(player1, player2)
+	# print(player1.name +" Wins: " + str(player1.wins))
+	# print(player2.name +" Wins: " + str(player2.wins))
+	#  # player1 = Barbarian()
+	#  # player2 = Barbarian()
+	#  # round(player1,player2)
