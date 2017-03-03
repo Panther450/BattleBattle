@@ -387,7 +387,6 @@ class Survivalist(BattleCards):
 
 #POWERS TOKEN: EVERY ROUND: Subtracts 1 from other players roll because guilt
 # If she rolls a 1 it turns into a 6
-
 class MotherInLaw(BattleCards):
 	def reset(self):
 		self.HP = 3
@@ -402,6 +401,29 @@ class MotherInLaw(BattleCards):
 		self.roll = self.roll+1
 		if(self.roll==1): 
 			self.roll = 6
+
+#POWERS: EVERY ROUND: Pick up tokens that other player uses
+#        TOKENS: Add 2 to a roll
+class Recycler(BattleCards):
+	def reset(self): 
+		self.HP = 3
+		self.tokens = 0
+		self.name = "Recycler"
+		self.tokensLastRound = -1;
+
+	def usePower(self,otherPlayer):
+		if (self.tokensLastRound == -1): 
+			self.tokensLastRound = otherPlayer.tokens
+
+		if(self.tokensLastRound > otherPlayer.tokens): 
+			self.tokens +=1
+
+		if (self.tokens>0 and self.roll <= otherPlayer.roll): 
+			self.tokens -=1 
+			self.roll += 2
+
+		self.tokensLastRound = otherPlayer.tokens
+
 
 def round(player1, player2): 
 	count = 0
@@ -486,6 +508,9 @@ def setUp():
 	motherinlaw = MotherInLaw()
 	characterList.append(motherinlaw)
 
+	recycler = Recycler()
+	characterList.append(recycler)
+
 	return characterList
 
 def RunSimulation():
@@ -499,7 +524,7 @@ def RunSimulation():
 			player2 = characterList[b] 
 			if player2 != player1: 
 				print(player1.name + " vs "+ player2.name)
-				for x in range (0,100):
+				for x in range (0,1000):
 					player1.reset()
 					player2.reset()
 					round(player1, player2)
@@ -515,8 +540,8 @@ def RunSimulation():
 	print("Total Rounds: " + str(total_rounds))
 	#win_rate = ((characterList[4].wins/21000)*100)
 
-	win_rate = (characterList[11].wins/(total_rounds*1.0))*100
-	print("Win Rate: " + str(win_rate))
+	# win_rate = (characterList[11].wins/(total_rounds*1.0))*100
+	# print("Win Rate: " + str(win_rate))
 
 if __name__ == "__main__":
 	RunSimulation()
