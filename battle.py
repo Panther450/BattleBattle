@@ -424,6 +424,29 @@ class Recycler(BattleCards):
 
 		self.tokensLastRound = otherPlayer.tokens
 
+#POWERS: EVERY ROUND: You can forfeit this round to roll an extra dice next round 
+#Does damage for all of the rolls that win
+class UniversityStudent(BattleCards): 
+	def reset(self):
+		self.HP = 4
+		self.tokens = 0
+		self.name = "UniversityStudent"
+		self.numberOfDice = 0
+
+	def usePower(self,otherPlayer): 
+		if(self.numberOfDice < self.HP): 
+			self.numberOfDice += 1 
+			self.roll = -1 
+
+		if (self.numberOfDice > 1): 
+			if (self.numberOfDice > 1):
+				for x in range (self.numberOfDice-1): 
+					currentRoll = random.randint(1,6)
+					if (currentRoll>self.roll): 
+						self.roll = currentRoll
+
+
+
 
 def round(player1, player2): 
 	count = 0
@@ -510,6 +533,9 @@ def setUp():
 
 	recycler = Recycler()
 	characterList.append(recycler)
+
+	universitystudent = UniversityStudent()
+	characterList.append(universitystudent)
 
 	return characterList
 
